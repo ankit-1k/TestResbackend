@@ -48,4 +48,13 @@ orderRouter.delete("/orders/:id", async (req, res) => {
     res.status(500).json({ error: "Failed to delete order" });
   }
 });
+orderRouter.get("/deleted-orders", async (req, res) => {
+  try {
+    const deletedOrders = await DeletedOrder.find();
+    res.status(200).json(deletedOrders);
+  } catch (error) {
+    res.status(500).json({ error: "Failed to retrieve deleted orders" });
+  }
+});
+
 module.exports = orderRouter;
