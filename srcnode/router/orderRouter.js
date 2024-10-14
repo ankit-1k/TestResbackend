@@ -1,8 +1,9 @@
-const express = require('express');
+const express = require("express");
 const orderRouter = express.Router();
-const Order = require('../schema/Order');
+const Order = require("../schema/Order");
+const DeletedOrder = require("../models/DeletedOrder");
 
-orderRouter.post('/order', async (req, res) => {
+orderRouter.post("/order", async (req, res) => {
   try {
     const { name, table, items, total } = req.body;
     const newOrder = new Order({
@@ -12,48 +13,39 @@ orderRouter.post('/order', async (req, res) => {
       total,
     });
     await newOrder.save();
-    res.status(201).json({ message: 'Order placed successfully!' });
+    res.status(201).json({ message: "Order placed successfully!" });
   } catch (error) {
-    res.status(500).json({ error: 'Failed to place order' });
+    res.status(500).json({ error: "Failed to place order" });
   }
 });
 
-orderRouter.get('/orders', async (req, res) => {
+orderRouter.get("/orders", async (req, res) => {
   try {
     const orders = await Order.find();
     res.status(200).json(orders);
   } catch (error) {
-    res.status(500).json({ error: 'Failed to retrieve orders' });
+    res.status(500).json({ error: "Failed to retrieve orders" });
   }
 });
-orderRouter.delete('/orders/:id', async (req, res) => {
+orderRouter.delete("/orders/:id", async (req, res) => {
   try {
-    const order = await Order.findByIdAndDelete(req.params.id);
-    if (!order) {
-      return res.status(404).json({ message: 'Order not found' });
-    }
-    res.json({ message: 'Order deleted successfully' });
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-orderRouter.put('/orders/:id', async (req, res) => {
-  const { name, table, items, total } = req.body;
+    const orderId = req.params.id;
 
-  try {
-    const updatedOrder = await Order.findByIdAndUpdate(
-      req.params.id,
-      { name, table, items, total },
-      { new: true, runValidators: true } // new: true returns the updated document
-    );
-
-    if (!updatedOrder) {
-      return res.status(404).json({ message: 'Order not found' });
+    // Find the order to delete
+    const orderToDelete = await Order.findById(orderId);
+    if (!orderToDelete) {
+      return res.status(404).json({ message: "Order not found" });
     }
-    
-    res.json(updatedOrder);
+
+    // Save the order to DeletedOrder collection before deletion
+    const deletedOrder = new DeletedOrder(orderToDelete.toObject());
+    await deletedOrder.save();
+
+    // Now delete the order from the original collection
+    await Order.findByIdAndDelete(orderId);
+    res.status(200).json({ message: "Order deleted successfully!" });
   } catch (error) {
-    res.status(400).json({ message: error.message });
+    res.status(500).json({ error: "Failed to delete order" });
   }
 });
 module.exports = orderRouter;
