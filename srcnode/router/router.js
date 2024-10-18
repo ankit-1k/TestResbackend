@@ -35,7 +35,16 @@ router.get("/check-availability", async (req, res) => {
 
 // Create reservation route (POST request)
 router.post("/reservations", async (req, res) => {
-  const { name, email, datetime, phone, table, people, duration, specialRequest } = req.body;
+  const {
+    name,
+    email,
+    datetime,
+    phone,
+    table,
+    people,
+    duration,
+    specialRequest,
+  } = req.body;
 
   const startTime = new Date(datetime);
   const endTime = new Date(startTime);
@@ -58,4 +67,37 @@ router.post("/reservations", async (req, res) => {
     res.status(500).json({ error: "Error saving reservation" });
   }
 });
+router.get("/reservations", async (req, res) => {
+  try {
+    const reservations = await Reservation.find(); // Fetch all reservations
+    res.json(reservations);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching reservations" });
+  }
+});
+router.delete("/reservations/:id", async (req, res) => {
+  try {
+    await Reservation.findByIdAndDelete(req.params.id);
+    res.json({ message: "Reservation deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ error: "Error deleting reservation" });
+  }
+});
+router.put("/reservations/:id", async (req, res) => {
+  const { name, email, phone, people, specialRequest } = req.body;
+  try {
+    const updatedReservation = await Reservation.findByIdAndUpdate(req.params.id, {
+      name,
+      email,
+      phone,
+      people,
+      specialRequest,
+    }, { new: true });
+
+    res.json(updatedReservation);
+  } catch (error) {
+    res.status(500).json({ error: "Error updating reservation" });
+  }
+});
+
 module.exports = router;
