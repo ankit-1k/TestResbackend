@@ -12,7 +12,7 @@ router.get("/check-availability", async (req, res) => {
 
   try {
     // Find reservations that overlap with the chosen time slot
-    const reservations = await Reservation.find({
+    const reservations = await Reservation.find({ 
       $or: [
         {
           datetime: { $lt: endTime }, // Reservation starts before new booking ends
@@ -69,20 +69,32 @@ router.post("/reservations", async (req, res) => {
 });
 router.get("/reservations", async (req, res) => {
   try {
-    const reservations = await Reservation.find(); // Fetch all reservations
+    // Exclude deleted reservations
+    const reservations = await Reservation.find({ isDeleted: false }); // Fetch all non-deleted reservations
     res.json(reservations);
   } catch (error) {
     res.status(500).json({ error: "Error fetching reservations" });
   }
 });
+
 router.delete("/reservations/:id", async (req, res) => {
   try {
-    await Reservation.findByIdAndDelete(req.params.id);
-    res.json({ message: "Reservation deleted successfully" });
+    // Find the reservation by ID
+    const reservation = await Reservation.findById(req.params.id);
+    if (!reservation) {
+      return res.status(404).json({ error: "Reservation not found" });
+    }
+
+    // Soft delete: Mark the reservation as deleted
+    reservation.isDeleted = true;
+    await reservation.save();
+
+    res.json({ message: "Reservation marked as deleted" });
   } catch (error) {
     res.status(500).json({ error: "Error deleting reservation" });
   }
 });
+
 router.put("/reservations/:id", async (req, res) => {
   const { name, email, phone, people, specialRequest } = req.body;
   try {
@@ -97,6 +109,14 @@ router.put("/reservations/:id", async (req, res) => {
     res.json(updatedReservation);
   } catch (error) {
     res.status(500).json({ error: "Error updating reservation" });
+  }
+});
+router.get("/deleted-reservations", async (req, res) => {
+  try {
+    const deletedReservations = await Reservation.find({ isDeleted: true });
+    res.json(deletedReservations);
+  } catch (error) {
+    res.status(500).json({ error: "Error fetching deleted reservations" });
   }
 });
 

@@ -10,6 +10,7 @@ const reservationSchema = new mongoose.Schema({
   table: [Number], // Array of table numbers
   people: Number,
   specialRequest: String,
+  isDeleted: { type: Boolean, default: false }
 });
 
 module.exports = mongoose.model("Reservation", reservationSchema);
