@@ -5,7 +5,6 @@ router.post("/", async (req, res) => {});
 
 router.get("/check-availability", async (req, res) => {
   const { datetime, duration } = req.query; // Fetch from query params
-
   const startTime = new Date(datetime);
   const endTime = new Date(startTime);
   endTime.setHours(endTime.getHours() + parseInt(duration)); // Add duration in hours
@@ -59,6 +58,7 @@ router.post("/reservations", async (req, res) => {
       phone,
       table,
       people,
+      duration,
       specialRequest,
     });
     await newReservation.save();

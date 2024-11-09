@@ -9,6 +9,10 @@ const reservationSchema = new mongoose.Schema({
   phone: String,
   table: [Number], // Array of table numbers
   people: Number,
+  duration:{
+    type:String,
+    required:true
+  },
   specialRequest: String,
   isDeleted: { type: Boolean, default: false }
 });
