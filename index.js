@@ -13,7 +13,8 @@ const app = express();
 
 const allowedOrigins = [
   "https://teston-lovat.vercel.app", // Frontend on Vercel
-  "https://restaurantbackend-1b3r0ac66-ankits-projects-1030ff5d.vercel.app" // Example of allowed backend URL
+  "http://localhost:3000",           // Local development frontend
+  "https://restaurantbackend-1b3r0ac66-ankits-projects-1030ff5d.vercel.app", // Example of allowed backend URL
 ];
 
 const corsOptions = {
@@ -25,8 +26,9 @@ const corsOptions = {
     }
   },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true // If you're sending cookies or authentication tokens
+  credentials: true, // If you're sending cookies or authentication tokens
 };
+
 
 app.use(cors(corsOptions));
 
