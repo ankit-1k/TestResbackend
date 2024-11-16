@@ -10,14 +10,12 @@ const adminRouter = require('./srcnode/router/adminRouter');
 const menuRoutes = require("./srcnode/adminRouter/adMenu");
 const contactRouter = require("./srcnode/router/contactRouter");
 const app = express();
-app.use(
-    cors(
-    //     {
-    //   origin: "http://localhost:3000",
-    //   credentials: true,
-    // }
-)
-  );
+
+app.use(cors({
+  origin: '*', // Allow all origins or specify your frontend's domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+}));
+
 app.use(bodyParser.json());
 app.use('/admin', adminRouter);
 connectDB();
@@ -32,3 +30,5 @@ const PORT = 4000;
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
+
+module.exports = app; // Export the app for Vercel
