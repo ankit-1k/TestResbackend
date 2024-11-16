@@ -11,10 +11,24 @@ const menuRoutes = require("./srcnode/adminRouter/adMenu");
 const contactRouter = require("./srcnode/router/contactRouter");
 const app = express();
 
-app.use(cors({
-  origin: '*', // Allow all origins or specify your frontend's domain
-  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
-}));
+const allowedOrigins = [
+  "https://teston-lovat.vercel.app", // Frontend on Vercel
+  "https://restaurantbackend-1b3r0ac66-ankits-projects-1030ff5d.vercel.app" // Example of allowed backend URL
+];
+
+const corsOptions = {
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+      callback(null, true); // Allow the request
+    } else {
+      callback(new Error("Not allowed by CORS")); // Reject the request
+    }
+  },
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  credentials: true // If you're sending cookies or authentication tokens
+};
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 app.use('/admin', adminRouter);
