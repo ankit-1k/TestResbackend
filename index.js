@@ -11,13 +11,10 @@ const menuRoutes = require("./srcnode/adminRouter/adMenu");
 const contactRouter = require("./srcnode/router/contactRouter");
 const app = express();
 
-const corsOptions = {
-  origin: true,  // Allows all origins
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
-  credentials: true,  // If you're sending cookies or authentication tokens
-};
-
-app.use(cors(corsOptions));
+app.use(cors({
+  origin: 'https://test-resbackend.vercel.app/api', // Allow all origins or specify your frontend's domain
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
+}));
 
 app.use(bodyParser.json());
 app.use('/admin', adminRouter);
