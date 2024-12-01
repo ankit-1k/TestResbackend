@@ -67,7 +67,7 @@ router.post("/reservations", async (req, res) => {
     res.status(500).json({ error: "Error saving reservation" });
   }
 });
-router.get("/reservations", async (req, res) => {
+router.get("/getreservations", async (req, res) => {
   try {
     // Exclude deleted reservations
     const reservations = await Reservation.find({ isDeleted: false }); // Fetch all non-deleted reservations
