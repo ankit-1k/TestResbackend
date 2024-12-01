@@ -20,7 +20,7 @@ app.use(bodyParser.json());
 app.use('/admin', adminRouter);
 connectDB();
 app.use(express.json());
-app.use(reservationRoutes);
+app.use('/api',reservationRoutes);
 app.use('/api/auth', authRouter);
 app.use('/api', orderRoutes);
 app.use("/api", menuRoutes);
