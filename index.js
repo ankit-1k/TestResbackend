@@ -12,7 +12,7 @@ const contactRouter = require("./srcnode/router/contactRouter");
 const app = express();
 
 app.use(cors({
-  origin: 'https://test-resbackend.vercel.app', // Allow all origins or specify your frontend's domain
+  origin: '*', // Allow all origins or specify your frontend's domain
   methods: ['GET', 'POST', 'PUT', 'DELETE'], // Allowed methods
 }));
 
