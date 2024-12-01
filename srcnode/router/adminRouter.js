@@ -1,5 +1,4 @@
 const express = require('express');
-const bcrypt = require('bcrypt');
 const Admin = require('../schema/adminModel'); // Your admin schema
 const router = express.Router();
 
@@ -14,9 +13,7 @@ router.post('/register', async (req, res) => {
       return res.status(400).json({ success: false, message: 'Admin already exists' });
     }
 
-    // Hash the password before saving it
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const newAdmin = new Admin({ username, password: hashedPassword });
+    const newAdmin = new Admin({ username, password });
 
     // Save the new admin to the database
     await newAdmin.save();
@@ -34,8 +31,7 @@ router.post('/login', async (req, res) => {
     const admin = await Admin.findOne({ username });
     if (!admin) return res.status(400).json({ success: false, message: 'Invalid credentials' });
 
-    const isMatch = await bcrypt.compare(password, admin.password);
-    if (!isMatch) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+    if (admin.password !== password) return res.status(400).json({ success: false, message: 'Invalid credentials' });
 
     // Admin login successful
     res.json({ success: true, message: 'Admin logged in successfully' });
