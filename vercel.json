@@ -1,10 +1,16 @@
 {
-    "version": 2,
-    "name": "testonbackend",
-    "builds": [
-       { "src": "index.js", "use": "@vercel/node" }
-    ],
-    "routes": [
-      { "src": "/api/(.*)", "dest": "/index.js" }
-    ]
+   "version": 2,
+   "name": "testonbackend",
+   "builds": [
+     { "src": "index.js", "use": "@vercel/node" }
+   ],
+   "functions": {
+     "api/*": {
+       "maxDuration": 30
+     }
+   },
+   "routes": [
+     { "src": "/api/(.*)", "dest": "/index.js" }
+   ]
  }
+ 
