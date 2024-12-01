@@ -17,7 +17,7 @@ app.use(cors({
 }));
 
 app.use(bodyParser.json());
-app.use('/admin', adminRouter);
+app.use('/api', adminRouter);
 connectDB();
 app.use(express.json());
 app.use('/api',reservationRoutes);
