@@ -2,7 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const connectDB = require("./srcnode/db/db");
-const authRouter=require('./srcnode/router/routerAuth')
+// const authRouter=require('./srcnode/router/routerAuth')
 const reservationRoutes=require('./srcnode/router/router')
 const orderRoutes = require('./srcnode/router/orderRouter');
 const adminRouter = require('./srcnode/router/adminRouter');
@@ -21,7 +21,7 @@ app.use('/api', adminRouter);
 connectDB();
 app.use(express.json());
 app.use('/api',reservationRoutes);
-app.use('/api/auth', authRouter);
+// app.use('/api/auth', authRouter);
 app.use('/api', orderRoutes);
 app.use("/api", menuRoutes);
 app.use('/api',contactRouter)

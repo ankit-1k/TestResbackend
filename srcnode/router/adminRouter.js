@@ -1,43 +1,57 @@
 const express = require('express');
-const Admin = require('../schema/adminModel'); // Your admin schema
+const jwt = require('jsonwebtoken');
+const Admin = require('../models/Admin');
 const router = express.Router();
 
-// Admin registration route
-router.post('/register', async (req, res) => {
-  const { username, password } = req.body;
+const SECRET_KEY = 'secretkey123'; // Make sure to use a secure key in production
 
-  try {
-    // Check if the admin already exists
-    const existingAdmin = await Admin.findOne({ username });
-    if (existingAdmin) {
-      return res.status(400).json({ success: false, message: 'Admin already exists' });
-    }
-
-    const newAdmin = new Admin({ username, password });
-
-    // Save the new admin to the database
-    await newAdmin.save();
-    res.status(201).json({ success: true, message: 'Admin registered successfully' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
-  }
-});
-
-// Admin login route
+// Admin Login Route
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
 
-  try {
-    const admin = await Admin.findOne({ username });
-    if (!admin) return res.status(400).json({ success: false, message: 'Invalid credentials' });
+  console.log("Received username:", username); // Debugging log
+  console.log("Received password:", password); // Debugging log
 
-    if (admin.password !== password) return res.status(400).json({ success: false, message: 'Invalid credentials' });
-
-    // Admin login successful
-    res.json({ success: true, message: 'Admin logged in successfully' });
-  } catch (error) {
-    res.status(500).json({ success: false, message: 'Server error' });
+  if (!username || !password) {
+    return res.status(400).json({ message: "Username and password are required" });
   }
+
+  try {
+    // Find the admin in the database
+    const admin = await Admin.findOne({ username });
+    console.log('Found Admin:', admin);  // Debugging log
+
+    if (!admin || admin.password !== password) {
+      return res.status(401).json({ message: "Invalid credentials" });
+    }
+
+    // Generate a JWT token
+    const token = jwt.sign({ id: admin._id, username: admin.username }, SECRET_KEY, { expiresIn: '1h' });
+    console.log('Generated Token:', token);  // Debugging log
+
+    // Respond with success and the token
+    res.json({
+      success: true,
+      message: 'Admin logged in successfully',
+      token: token,  // Ensure token is included here
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Token Validation Route
+router.get("/validate", (req, res) => {
+    const token = req.headers["authorization"];
+    if (!token) return res.status(401).json({ message: "No token provided" });
+
+    try {
+        const decoded = jwt.verify(token, SECRET_KEY);
+        res.json({ valid: true, user: decoded });
+    } catch (err) {
+        res.status(401).json({ message: "Invalid token" });
+    }
 });
 
 module.exports = router;
