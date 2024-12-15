@@ -26,7 +26,7 @@ router.post('/login', async (req, res) => {
     }
 
     // Generate a JWT token
-    const token = jwt.sign({ id: admin._id, username: admin.username }, SECRET_KEY, { expiresIn: '1s' });
+    const token = jwt.sign({ id: admin._id, username: admin.username }, SECRET_KEY, { expiresIn: '1h' });
     console.log('Generated Token:', token);  // Debugging log
 
     // Respond with success and the token
@@ -41,6 +41,7 @@ router.post('/login', async (req, res) => {
   }
 });
 
+
 // Token Validation Route
 router.get("/validate", (req, res) => {
   const token = req.headers["authorization"];
@@ -52,11 +53,14 @@ router.get("/validate", (req, res) => {
 
       // Verify the token
       const decoded = jwt.verify(tokenWithoutBearer, SECRET_KEY);
+      console.log("Token validated, user:", decoded);  // Debugging log
       res.json({ valid: true, user: decoded });
   } catch (err) {
+      console.error("Token verification failed:", err);
       res.status(401).json({ message: "Invalid token" });
   }
 });
+
 
 
 module.exports = router;
