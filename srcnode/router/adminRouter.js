@@ -43,15 +43,20 @@ router.post('/login', async (req, res) => {
 
 // Token Validation Route
 router.get("/validate", (req, res) => {
-    const token = req.headers["authorization"];
-    if (!token) return res.status(401).json({ message: "No token provided" });
+  const token = req.headers["authorization"];
+  if (!token) return res.status(401).json({ message: "No token provided" });
 
-    try {
-        const decoded = jwt.verify(token, SECRET_KEY);
-        res.json({ valid: true, user: decoded });
-    } catch (err) {
-        res.status(401).json({ message: "Invalid token" });
-    }
+  try {
+      // Extract token from 'Bearer <token>'
+      const tokenWithoutBearer = token.split(" ")[1];
+
+      // Verify the token
+      const decoded = jwt.verify(tokenWithoutBearer, SECRET_KEY);
+      res.json({ valid: true, user: decoded });
+  } catch (err) {
+      res.status(401).json({ message: "Invalid token" });
+  }
 });
+
 
 module.exports = router;
